@@ -41,10 +41,10 @@ jobs:
         with:
           version: 10
 
-      - name: Node v16
+      - name: Node v18
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
           cache: 'pnpm'
 
       - name: install dependencies

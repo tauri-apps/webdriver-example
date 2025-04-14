@@ -29,13 +29,23 @@ jobs:
           xvfb
 
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false
+          rustflags: ""
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: v1/src-tauri
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Node v16
         uses: actions/setup-node@v4
         with:
           node-version: 16
-
-      - uses: pnpm/action-setup@v4
+          cache: 'pnpm'
 
       - name: install dependencies
         run: |

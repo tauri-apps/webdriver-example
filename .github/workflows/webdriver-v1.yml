@@ -46,13 +46,13 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
+          cache-dependency-path: |
+            v1/pnpm-lock.yaml
+            v1/webdriver/${{ matrix.webdriver-test }}/pnpm-lock.yaml
 
       - name: install dependencies
-        run: |
-          cd v1
-          pnpm install
-          cd webdriver
-          pnpm install
+        run: pnpm install
+        working-directory: v1
 
       - name: Install tauri-driver
         run: cargo install tauri-driver --locked

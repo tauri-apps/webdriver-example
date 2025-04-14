@@ -2,8 +2,6 @@
 
 A collection of different testing projects that utilize WebDriver clients to test the Tauri application in this repository.
 
-Run all the projects at once with `pnpm test`.
-
 ## Examples
 | dir                           | Description                                                             |
 | ----------------------------- | ----------------------------------------------------------------------- |

@@ -5,7 +5,7 @@ on:
       - '.github/workflows/webdriver-v2.yml'
       - 'v2/**'
 
-name: WebDriver
+name: WebDriver (v2)
 
 jobs:
   test:

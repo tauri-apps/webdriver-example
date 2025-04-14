@@ -1,0 +1,15 @@
+{
+  "name": "hello_tauri_webdriver_tests",
+  "version": "1.0.0",
+  "description": "A workspace containing different ways to test Tauri applications with a WebDriver client.",
+  "license": "Apache-2.0",
+  "private": true,
+  "workspaces": [
+    "selenium",
+    "webdriverio"
+  ],
+  "dependencies": {
+    "@wdio/cli": "^7.7.3",
+    "prettier": "^2.3.0"
+  }
+}

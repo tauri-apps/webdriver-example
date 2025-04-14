@@ -1,0 +1,51 @@
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/webdriver-v2.yml'
+      - 'v2/**'
+
+name: WebDriver
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        webdriver-test: [ selenium, webdriverio ]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Tauri dependencies
+        run: >
+          sudo apt-get update &&
+          sudo apt-get install -y
+          webkit2gtk-4.1
+          libayatana-appindicator3-dev
+          webkit2gtk-driver
+          xvfb
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Node v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v4
+
+      - name: install dependencies
+        run: |
+          cd v2
+          pnpm install
+          cd webdriver
+          pnpm install
+
+      - name: Install tauri-driver
+        run: cargo install tauri-driver --locked
+
+      - name: run tests using WebdriverIO
+        run: |
+          pnpm install
+          xvfb-run pnpm test
+        working-directory: v2/webdriver/${{ matrix.webdriver-test }}

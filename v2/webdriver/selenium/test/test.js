@@ -65,12 +65,12 @@ after(async function () {
 
 describe("Hello Tauri", () => {
   it("should be cordial", async () => {
-    const text = await driver.findElement(By.css("body > h1")).getText();
+    const text = await driver.findElement(By.css("body h1")).getText();
     expect(text).to.match(/^Welcome/);
   });
 
   it("should be excited", async () => {
-    const text = await driver.findElement(By.css("body > h1")).getText();
+    const text = await driver.findElement(By.css("body h1")).getText();
     expect(text).to.match(/!$/);
   });
 

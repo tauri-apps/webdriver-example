@@ -12,7 +12,7 @@ exports.config = {
     {
       maxInstances: 1,
       "tauri:options": {
-        application: "../../target/release/hello_tauri",
+        application: "../../src-tauri/target/debug/tauri-app",
       },
     },
   ],
@@ -24,11 +24,18 @@ exports.config = {
   },
 
   // ensure the rust project is built since we expect this binary to exist for the webdriver sessions
-  onPrepare: () => spawnSync(
+  onPrepare: () => {
+    spawnSync(
+      "pnpm",
+      ["build"],
+      { cwd: path.resolve(__dirname, "../.."), stdio: 'inherit' }
+    )
+    spawnSync(
     "cargo",
     ["build", "--features", "tauri/custom-protocol"],
-    { cwd: path.resolve(__dirname, "../../src-tauri") }
-  ),
+    { cwd: path.resolve(__dirname, "../../src-tauri"), stdio: 'inherit' }
+  )
+  },
 
   // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
   beforeSession: () =>

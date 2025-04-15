@@ -9,10 +9,10 @@ const application = path.resolve(
   __dirname,
   "..",
   "..",
-  "..",
+  "src-tauri",
   "target",
-  "release",
-  "hello_tauri"
+  "debug",
+  "tauri-app"
 );
 
 // keep track of the webdriver instance we create
@@ -27,9 +27,14 @@ before(async function() {
 
   // ensure the program has been built
   spawnSync(
+    "pnpm",
+    ["build"],
+    { cwd: path.resolve(__dirname, "../.."), stdio: 'inherit' }
+  )
+  spawnSync(
     "cargo",
     ["build", "--features", "tauri/custom-protocol"],
-    { cwd: path.resolve(__dirname, "../../src-tauri") }
+    { cwd: path.resolve(__dirname, "../../src-tauri"), stdio: 'inherit' }
   );
 
   // start tauri-driver

@@ -28,7 +28,7 @@ exports.config = {
     spawnSync(
       "pnpm",
       ["build"],
-      { cwd: path.resolve(__dirname, "../.."), stdio: 'inherit' }
+      { cwd: path.resolve(__dirname, "../.."), stdio: 'inherit', shell: true }
     )
     spawnSync(
     "cargo",

@@ -29,7 +29,7 @@ before(async function() {
   spawnSync(
     "pnpm",
     ["build"],
-    { cwd: path.resolve(__dirname, "../.."), stdio: 'inherit' }
+    { cwd: path.resolve(__dirname, "../.."), stdio: 'inherit', shell: true }
   )
   spawnSync(
     "cargo",
@@ -66,7 +66,7 @@ after(async function() {
 describe("Hello Tauri", () => {
   it("should be cordial", async () => {
     const text = await driver.findElement(By.css("body > h1")).getText();
-    expect(text).to.match(/^[hH]ello/);
+    expect(text).to.match(/^Welcome/);
   });
 
   it("should be excited", async () => {

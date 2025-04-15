@@ -8,18 +8,18 @@ function luma(hex) {
   const r = (rgb >> 16) & 0xff;
   const g = (rgb >> 8) & 0xff;
   const b = (rgb >> 0) & 0xff;
-  return  0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
 describe("Hello Tauri", () => {
   it("should be cordial", async () => {
-    const header = await $("body > h1");
+    const header = await $("body h1");
     const text = await header.getText();
-    expect(text).toMatch(/^[hH]ello/);
+    expect(text).toMatch(/^Welcome/);
   });
 
   it("should be excited", async () => {
-    const header = await $("body > h1");
+    const header = await $("body h1");
     const text = await header.getText();
     expect(text).toMatch(/!$/);
   });

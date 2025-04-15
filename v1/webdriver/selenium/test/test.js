@@ -29,12 +29,12 @@ before(async function() {
   spawnSync(
     "pnpm",
     ["build"],
-    { cwd: path.resolve(__dirname, "../.."), stdio: 'inherit', shell: true }
+    { cwd: path.resolve(__dirname, "../../.."), stdio: 'inherit', shell: true }
   )
   spawnSync(
     "cargo",
     ["build", "--features", "tauri/custom-protocol"],
-    { cwd: path.resolve(__dirname, "../../src-tauri"), stdio: 'inherit' }
+    { cwd: path.resolve(__dirname, "../../../src-tauri"), stdio: 'inherit' }
   );
 
   // start tauri-driver

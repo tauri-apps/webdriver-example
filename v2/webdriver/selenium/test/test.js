@@ -27,12 +27,12 @@ before(async function () {
 
   // ensure the program has been built
   spawnSync("pnpm", ["build"], {
-    cwd: path.resolve(__dirname, "../.."),
+    cwd: path.resolve(__dirname, "../../.."),
     stdio: "inherit",
     shell: true,
   });
   spawnSync("cargo", ["build", "--features", "tauri/custom-protocol"], {
-    cwd: path.resolve(__dirname, "../../src-tauri"),
+    cwd: path.resolve(__dirname, "../../../src-tauri"),
     stdio: "inherit",
   });
 

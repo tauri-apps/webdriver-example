@@ -14,12 +14,12 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-22.04, windows-latest]
-        webdriver-test: [ selenium, webdriverio ]
+        webdriver-test: [selenium, webdriverio]
     steps:
       - uses: actions/checkout@v2
 
       - name: Tauri dependencies
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.platform == 'ubuntu-22.04'
         run: >
           sudo apt-get update &&
           sudo apt-get install -y
@@ -68,14 +68,14 @@ jobs:
         run: cargo install tauri-driver --locked
 
       - name: run tests using ${{ matrix.webdriver-test }} (Linux)
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           pnpm install
           xvfb-run pnpm test
         working-directory: v1/webdriver/${{ matrix.webdriver-test }}
 
       - name: run tests using ${{ matrix.webdriver-test }} (Windows)
-        if: matrix.platform == 'ubuntu-latest'
+        if: matrix.platform == 'windows-latest'
         run: |
           pnpm install
           pnpm test

@@ -55,7 +55,7 @@ jobs:
       - name: Install tauri-driver
         run: cargo install tauri-driver --locked
 
-      - name: run tests using WebdriverIO
+      - name: run tests using ${{ matrix.webdriver-test }}
         run: |
           pnpm install
           xvfb-run pnpm test

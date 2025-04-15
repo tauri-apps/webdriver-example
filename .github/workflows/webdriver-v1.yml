@@ -10,14 +10,16 @@ name: WebDriver (v1)
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
-        webdriver-test: [selenium, webdriverio]
+        platform: [ubuntu-22.04, windows-latest]
+        webdriver-test: [ selenium, webdriverio ]
     steps:
       - uses: actions/checkout@v2
 
       - name: Tauri dependencies
+        if: matrix.platform == 'ubuntu-latest'
         run: >
           sudo apt-get update &&
           sudo apt-get install -y
@@ -27,6 +29,14 @@ jobs:
           libayatana-appindicator3-dev
           webkit2gtk-driver
           xvfb
+
+      - name: install Tauri dependencies (Windows)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          Invoke-WebRequest https://msedgedriver.azureedge.net/135.0.3179.73/edgedriver_win64.zip -OutFile edgedriver_win64.zip
+          Expand-Archive -Path edgedriver_win64.zip
+          $msedgedriverPath = (Get-ChildItem edgedriver_win64/msedgedriver.exe -Recurse).fullname
+          echo $msedgedriverPath >> $env:GITHUB_PATH
 
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
@@ -57,8 +67,16 @@ jobs:
       - name: Install tauri-driver
         run: cargo install tauri-driver --locked
 
-      - name: run tests using ${{ matrix.webdriver-test }}
+      - name: run tests using ${{ matrix.webdriver-test }} (Linux)
+        if: matrix.platform == 'ubuntu-latest'
         run: |
           pnpm install
           xvfb-run pnpm test
+        working-directory: v1/webdriver/${{ matrix.webdriver-test }}
+
+      - name: run tests using ${{ matrix.webdriver-test }} (Windows)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          pnpm install
+          pnpm test
         working-directory: v1/webdriver/${{ matrix.webdriver-test }}

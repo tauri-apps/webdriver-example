@@ -2,22 +2,24 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - '.github/workflows/webdriver-v2.yml'
-      - 'v2/**'
+      - ".github/workflows/webdriver-v2.yml"
+      - "v2/**"
 
 name: WebDriver (v2)
 
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
-        webdriver-test: [ selenium, webdriverio ]
+        platform: [ubuntu-latest, windows-latest]
+        webdriver-test: [selenium, webdriverio]
     steps:
       - uses: actions/checkout@v2
 
-      - name: Tauri dependencies
+      - name: install Tauri dependencies (Linux)
+        if: matrix.platform == 'ubuntu-latest'
         run: >
           sudo apt-get update &&
           sudo apt-get install -y
@@ -25,6 +27,14 @@ jobs:
           libayatana-appindicator3-dev
           webkit2gtk-driver
           xvfb
+
+      - name: install Tauri dependencies (Windows)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          Invoke-WebRequest https://msedgedriver.azureedge.net/135.0.3179.73/edgedriver_win64.zip -OutFile edgedriver_win64.zip
+          Expand-Archive -Path edgedriver_win64.zip
+          $msedgedriverPath = (Get-ChildItem edgedriver_win64/msedgedriver.exe -Recurse).fullname
+          echo $msedgedriverPath >> $env:GITHUB_PATH
 
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
@@ -43,7 +53,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
           cache-dependency-path: |
             v2/pnpm-lock.yaml
             v2/webdriver/${{ matrix.webdriver-test }}/pnpm-lock.yaml

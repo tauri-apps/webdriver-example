@@ -9,6 +9,7 @@ const application = path.resolve(
   __dirname,
   "..",
   "..",
+  "..",
   "src-tauri",
   "target",
   "debug",

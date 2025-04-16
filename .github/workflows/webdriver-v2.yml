@@ -28,13 +28,9 @@ jobs:
           webkit2gtk-driver
           xvfb
 
-      - name: install Tauri dependencies (Windows)
+      - name: add msedgedriver to PATH
         if: matrix.platform == 'windows-latest'
-        run: |
-          Invoke-WebRequest https://msedgedriver.azureedge.net/135.0.3179.73/edgedriver_win64.zip -OutFile edgedriver_win64.zip
-          Expand-Archive -Path edgedriver_win64.zip
-          $msedgedriverPath = (Get-ChildItem edgedriver_win64/msedgedriver.exe -Recurse).fullname
-          echo $msedgedriverPath >> $env:GITHUB_PATH
+        run: echo "$env:EdgeWebDriver/msedgedriver.exe" >> $env:GITHUB_PATH
 
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:

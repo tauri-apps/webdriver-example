@@ -76,3 +76,4 @@ jobs:
         working-directory: v2/webdriver/${{ matrix.webdriver-test }}
         env:
           TAURI_DRIVER_ARGS: --port 6654 --native-port 6655
+          TAURI_DRIVER_PORT: 6654

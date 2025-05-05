@@ -40,7 +40,7 @@ exports.config = {
   beforeSession: () =>
     (tauriDriver = spawn(
       path.resolve(os.homedir(), ".cargo", "bin", "tauri-driver"),
-      [],
+      process.env.TAURI_DRIVER_ARGS?.split(" ") ?? [],
       { stdio: [null, process.stdout, process.stderr] }
     )),
 

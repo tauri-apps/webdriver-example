@@ -14,6 +14,7 @@ exports.config = {
       "tauri:options": {
         application: "../../src-tauri/target/debug/tauri-app",
       },
+      port: process.env.TAURI_DRIVER_PORT || 4444,
     },
   ],
   reporters: ["spec"],

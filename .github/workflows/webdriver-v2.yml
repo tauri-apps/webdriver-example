@@ -60,7 +60,7 @@ jobs:
         working-directory: v2
 
       - name: Install tauri-driver
-        run: cargo install tauri-driver --locked
+        run: cargo install tauri-driver --locked --git https://github.com/tauri-apps/tauri --branch fix/wait-webdriver
 
       - name: run tests using ${{ matrix.webdriver-test }} (Linux)
         if: matrix.platform == 'ubuntu-latest'

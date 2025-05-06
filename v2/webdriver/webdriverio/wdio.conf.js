@@ -1,6 +1,7 @@
 const os = require("os");
 const path = require("path");
 const { spawn, spawnSync } = require("child_process");
+const { Socket } = require("net");
 
 // keep track of the `tauri-driver` child process
 let tauriDriver;
@@ -53,7 +54,7 @@ exports.config = {
 function waitForServer(host, port, timeout = 2000) {
   return new Promise((resolve) => {
     const tryConnect = () => {
-      const socket = new net.Socket();
+      const socket = new Socket();
 
       socket.setTimeout(timeout);
       socket.once("connect", () => {

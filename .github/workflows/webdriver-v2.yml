@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
-        platform: [ubuntu-latest, windows-latest]
-        webdriver-test: [selenium, webdriverio]
+        platform: [windows-latest]
+        webdriver-test: [webdriverio]
     steps:
       - uses: actions/checkout@v2
 

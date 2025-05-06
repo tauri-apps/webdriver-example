@@ -46,6 +46,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: v1/src-tauri
+          cache-on-failure: true
 
       - uses: pnpm/action-setup@v4
         with:

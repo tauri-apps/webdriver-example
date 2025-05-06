@@ -37,13 +37,41 @@ exports.config = {
   },
 
   // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
-  beforeSession: () =>
-    (tauriDriver = spawn(
+  beforeSession: () => {
+    tauriDriver = spawn(
       path.resolve(os.homedir(), ".cargo", "bin", "tauri-driver"),
       [],
       { stdio: [null, process.stdout, process.stderr] }
-    )),
+    );
+    waitForServer("127.0.0.1", 4444);
+  },
 
   // clean up the `tauri-driver` process we spawned at the start of the session
   afterSession: () => tauriDriver.kill(),
 };
+
+function waitForServer(host, port, timeout = 2000) {
+  return new Promise((resolve) => {
+    const tryConnect = () => {
+      const socket = new net.Socket();
+
+      socket.setTimeout(timeout);
+      socket.once("connect", () => {
+        socket.destroy();
+        resolve(); // Connected successfully
+      });
+      socket.once("timeout", () => {
+        socket.destroy();
+        setTimeout(tryConnect, timeout);
+      });
+      socket.once("error", () => {
+        socket.destroy();
+        setTimeout(tryConnect, timeout);
+      });
+
+      socket.connect(port, host);
+    };
+
+    tryConnect();
+  });
+}

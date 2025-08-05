@@ -12,6 +12,7 @@ jobs:
     name: Test
     runs-on: ${{ matrix.platform }}
     strategy:
+      fail-fast: false
       matrix:
         platform: [ubuntu-22.04, windows-latest]
         webdriver-test: [selenium, webdriverio]

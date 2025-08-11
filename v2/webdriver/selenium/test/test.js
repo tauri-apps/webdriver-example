@@ -1,8 +1,11 @@
-const os = require("os");
-const path = require("path");
-const { expect } = require("chai");
-const { spawn, spawnSync } = require("child_process");
-const { Builder, By, Capabilities } = require("selenium-webdriver");
+import os from "os";
+import path from "path";
+import { expect } from "chai";
+import { spawn, spawnSync } from "child_process";
+import { Builder, By, Capabilities } from "selenium-webdriver";
+import { fileURLToPath } from "url";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // create the path to the expected application binary
 const application = path.resolve(
@@ -21,20 +24,17 @@ let driver;
 
 // keep track of the tauri-driver process we start
 let tauriDriver;
+let exit = false;
 
 before(async function () {
   // set timeout to 2 minutes to allow the program to build if it needs to
   this.timeout(120000);
 
   // ensure the program has been built
-  spawnSync("pnpm", ["build"], {
+  spawnSync("pnpm", ["tauri", "build", "--no-bundle"], {
     cwd: path.resolve(__dirname, "../../.."),
     stdio: "inherit",
     shell: true,
-  });
-  spawnSync("cargo", ["build", "--features", "tauri/custom-protocol"], {
-    cwd: path.resolve(__dirname, "../../../src-tauri"),
-    stdio: "inherit",
   });
 
   // start tauri-driver
@@ -57,10 +57,7 @@ before(async function () {
 
 after(async function () {
   // stop the webdriver session
-  await driver.quit();
-
-  // kill the tauri-driver process
-  tauriDriver.kill();
+  await closeTauriDriver();
 });
 
 describe("Hello Tauri", () => {
@@ -86,4 +83,33 @@ describe("Hello Tauri", () => {
     const luma = 0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b;
     expect(luma).to.be.lessThan(100);
   });
+});
+
+async function closeTauriDriver() {
+  exit = true;
+  // stop the webdriver session
+  await driver.quit();
+
+  // kill the tauri-driver process
+  tauriDriver.kill();
+}
+
+function onShutdown(fn) {
+  const cleanup = () => {
+    try {
+      fn();
+    } finally {
+      process.exit();
+    }
+  };
+
+  process.on("exit", cleanup);
+  process.on("SIGINT", cleanup);
+  process.on("SIGTERM", cleanup);
+  process.on("SIGHUP", cleanup);
+  process.on("SIGBREAK", cleanup);
+}
+
+onShutdown(() => {
+  closeTauriDriver();
 });

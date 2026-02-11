@@ -31,7 +31,7 @@ before(async function () {
   this.timeout(120000);
 
   // ensure the program has been built
-  spawnSync("pnpm", ["tauri", "build", "--no-bundle"], {
+  spawnSync("pnpm", ["tauri", "build", "--debug", "--no-bundle"], {
     cwd: path.resolve(__dirname, "../../.."),
     stdio: "inherit",
     shell: true,

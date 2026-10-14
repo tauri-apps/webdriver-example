@@ -1,0 +1,5 @@
+# tauri-driver is used instead of the browser drivers wdio would download
+allowBuilds:
+  edgedriver: false
+  esbuild: false
+  geckodriver: false

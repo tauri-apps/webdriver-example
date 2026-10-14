@@ -1,6 +1,40 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended"],
+  "schedule": ["before 6am on monday"],
+  "prConcurrentLimit": 4,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "The v1 example must stay on Tauri 1",
+      "matchFileNames": ["v1/**"],
+      "matchPackageNames": ["@tauri-apps/**", "tauri", "tauri-build", "tauri-plugin-*"],
+      "allowedVersions": "<2"
+    },
+    {
+      "description": "Cargo in-range updates only come from lock file maintenance (a full `cargo update`); per-crate lockfile bumps leave tauri's internal crates (tauri-utils, tauri-plugin...) at mismatched versions",
+      "matchManagers": ["cargo"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "enabled": false
+    },
+    {
+      "description": "One PR for the non-major updates of each example",
+      "matchFileNames": ["v1/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "v1 non-major dependencies"
+    },
+    {
+      "description": "One PR for the non-major updates of each example",
+      "matchFileNames": ["v2/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "v2 non-major dependencies"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    }
   ]
 }

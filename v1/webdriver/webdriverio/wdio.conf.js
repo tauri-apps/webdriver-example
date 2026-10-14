@@ -31,15 +31,12 @@ export const config = {
 
   // ensure the rust project is built since we expect this binary to exist for the webdriver sessions
   onPrepare: () => {
-    spawnSync("pnpm", ["build"], {
-      cwd: path.resolve(__dirname, "../.."),
-      stdio: "inherit",
-      shell: true,
-    });
-    spawnSync("cargo", ["build", "--features", "tauri/custom-protocol"], {
-      cwd: path.resolve(__dirname, "../../src-tauri"),
-      stdio: "inherit",
-    });
+    run("pnpm", ["build"], path.resolve(__dirname, "../.."));
+    run(
+      "cargo",
+      ["build", "--features", "tauri/custom-protocol"],
+      path.resolve(__dirname, "../../src-tauri")
+    );
   },
 
   // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
@@ -92,3 +89,14 @@ function onShutdown(fn) {
 onShutdown(() => {
   closeTauriDriver();
 });
+
+function run(command, args, cwd) {
+  const { status } = spawnSync(command, args, {
+    cwd,
+    stdio: "inherit",
+    shell: true,
+  });
+  if (status !== 0) {
+    throw new Error(`\`${command} ${args.join(" ")}\` failed with exit code ${status}`);
+  }
+}

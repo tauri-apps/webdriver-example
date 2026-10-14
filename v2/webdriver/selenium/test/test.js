@@ -2,7 +2,7 @@ import os from "os";
 import path from "path";
 import { expect } from "chai";
 import { spawn, spawnSync } from "child_process";
-import { Builder, By, Capabilities } from "selenium-webdriver";
+import { Builder, By, Capabilities, until } from "selenium-webdriver";
 import { fileURLToPath } from "url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
@@ -27,15 +27,15 @@ let tauriDriver;
 let exit = false;
 
 before(async function () {
-  // set timeout to 2 minutes to allow the program to build if it needs to
-  this.timeout(120000);
+  // set timeout to 10 minutes to allow the program to build if it needs to
+  this.timeout(600000);
 
   // ensure the program has been built
-  spawnSync("pnpm", ["tauri", "build", "--no-bundle"], {
-    cwd: path.resolve(__dirname, "../../.."),
-    stdio: "inherit",
-    shell: true,
-  });
+  run(
+    "pnpm",
+    ["tauri", "build", "--debug", "--no-bundle"],
+    path.resolve(__dirname, "../../..")
+  );
 
   // start tauri-driver
   tauriDriver = spawn(
@@ -53,6 +53,9 @@ before(async function () {
     .withCapabilities(capabilities)
     .usingServer("http://localhost:4444/")
     .build();
+
+  // wait for the frontend to render before running the tests
+  await driver.wait(until.elementLocated(By.css("body h1")), 30000);
 });
 
 after(async function () {
@@ -87,11 +90,14 @@ describe("Hello Tauri", () => {
 
 async function closeTauriDriver() {
   exit = true;
-  // stop the webdriver session
-  await driver.quit();
-
-  // kill the tauri-driver process
-  tauriDriver.kill();
+  try {
+    // stop the webdriver session
+    await driver?.quit();
+  } finally {
+    // kill the tauri-driver process even if the session was never created,
+    // otherwise it keeps mocha (and the CI job) alive forever
+    tauriDriver?.kill();
+  }
 }
 
 function onShutdown(fn) {
@@ -113,3 +119,14 @@ function onShutdown(fn) {
 onShutdown(() => {
   closeTauriDriver();
 });
+
+function run(command, args, cwd) {
+  const { status } = spawnSync(command, args, {
+    cwd,
+    stdio: "inherit",
+    shell: true,
+  });
+  if (status !== 0) {
+    throw new Error(`\`${command} ${args.join(" ")}\` failed with exit code ${status}`);
+  }
+}

@@ -7,17 +7,23 @@ on:
 
 name: WebDriver (v1)
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test
     runs-on: ${{ matrix.platform }}
+    # a hung webdriver session must not hold a runner (and the org's concurrency quota) for 6 hours
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-22.04, windows-latest]
         webdriver-test: [selenium, webdriverio]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
       - name: Tauri dependencies
         if: matrix.platform == 'ubuntu-22.04'
@@ -38,7 +44,7 @@ jobs:
           & "$HOME/.cargo/bin/msedgedriver-tool.exe"
           $PWD.Path >> $env:GITHUB_PATH
 
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: actions-rust-lang/setup-rust-toolchain@v2
         with:
           cache: false
           rustflags: ""
@@ -47,14 +53,14 @@ jobs:
         with:
           workspaces: v1/src-tauri
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
-          version: 10
+          version: 12
 
-      - name: Node v18
-        uses: actions/setup-node@v4
+      - name: Node v24
+        uses: actions/setup-node@v7
         with:
-          node-version: 18
+          node-version: 24
           cache: "pnpm"
           cache-dependency-path: |
             v1/pnpm-lock.yaml
@@ -68,6 +74,7 @@ jobs:
         run: cargo install tauri-driver --locked
 
       - name: run tests using ${{ matrix.webdriver-test }} (Linux)
+        timeout-minutes: 15
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           pnpm install
@@ -75,6 +82,7 @@ jobs:
         working-directory: v1/webdriver/${{ matrix.webdriver-test }}
 
       - name: run tests using ${{ matrix.webdriver-test }} (Windows)
+        timeout-minutes: 15
         if: matrix.platform == 'windows-latest'
         run: |
           pnpm install
